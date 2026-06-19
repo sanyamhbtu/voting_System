@@ -4,10 +4,11 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsc && node dist\\index.js",
+    "dev": "tsc && node dist/index.js",
+    "start": "node dist/index.js",
     "build": "tsc --build && copyfiles -u 1 src/voterVerification.py dist/",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "pip install -r requirements.txt"
+    "py:install": "pip install -r requirements.txt"
   },
   "keywords": [],
   "author": "",

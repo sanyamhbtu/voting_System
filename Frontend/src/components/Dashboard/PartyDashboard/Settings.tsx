@@ -5,6 +5,7 @@ import { Upload, Image, FileText, User, Users, Building, AtSign,Bell, Settings a
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { API_URL } from '../../../utils/util';
 
 export interface PartyDetails {
     name: string;
@@ -36,7 +37,7 @@ export default function Settings () {
       useEffect(() => {
         const getPartyDetails = async () => {
             try {
-                const details = await axios.get('http://localhost:3000/api/v2/partyDetails',{
+                const details = await axios.get(`${API_URL}/api/v2/partyDetails`,{
                     withCredentials : true
                 })
                 if(details.status === 200){
@@ -66,7 +67,7 @@ export default function Settings () {
                     })
                 }
                 console.log("partyDetails", partyDetails)
-            } catch (error) {
+            } catch {
                 alert("Error in fetching details. Please try again!")
                 setPartyDetails({
                     name: '',
@@ -109,7 +110,7 @@ export default function Settings () {
             const formData = new FormData();
             formData.append('file', file);
             try {
-                const upload = await axios.post('http://localhost:3000/api/v1/upload', formData, {
+                const upload = await axios.post(`${API_URL}/api/v1/upload`, formData, {
                   headers: { 'Content-Type': 'multipart/form-data' }
                 });
                 if(upload.status !== 200){
@@ -135,7 +136,7 @@ export default function Settings () {
                 }else if( type === 'symbol'){
                     setPartyDetails({...partyDetails, symbol : upload.data.url})
                 }
-              } catch (error) {
+              } catch {
                 alert("error to connect database")
               }finally {
                 URL.revokeObjectURL(localPreview);
@@ -146,7 +147,7 @@ export default function Settings () {
     const handleSubmit = async () => {
         
         try {
-            const update = await axios.put('http://localhost:3000/api/v2/updateProfile',{
+            const update = await axios.put(`${API_URL}/api/v2/updateProfile`,{
                     name: partyDetails.name,
                     abbreviation: partyDetails.abbreviation,
                     address: partyDetails.address,
@@ -162,37 +163,39 @@ export default function Settings () {
                 alert("Profile updated successfully!");
                 navigate(`/party/dashboard/${token}`)
             }
-        } catch (error) {
+        } catch {
             alert("Error in updating profile. Please try again!")
             navigate(`/party/dashboard/${token}`)
         }
     }
       return (
-        <div className="min-h-screen bg-white p-8">
-            
-            <motion.header 
+        <div className="min-h-screen bg-aurora text-white p-8">
+
+            <motion.header
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white border-b border-purple-100 p-4 mb-11"
+            className="glass border-b border-white/10 p-4 mb-11 rounded-2xl"
           >
             <div className="max-w-7xl mx-auto flex justify-between items-center">
               <Link to={`/party/dashboard/${token}`}>
-                  <div className="flex items-center space-x-4">
-                    <Award className="w-8 h-8 text-purple-600" />
-                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-400">
+                  <div className="flex items-center space-x-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient text-white glow">
+                      <Award className="w-6 h-6" />
+                    </span>
+                    <h1 className="text-2xl font-bold font-display gradient-text">
                       ElectCode
                     </h1>
                   </div>
               </Link>
-              
-              <div className="flex items-center space-x-4">
-                <button className="p-2 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer">
-                  <Bell className="w-6 h-6 text-purple-600" />
+
+              <div className="flex items-center space-x-2">
+                <button className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-brand-400 transition-colors cursor-pointer">
+                  <Bell className="w-5 h-5 text-cyber-400" />
                 </button>
-                <Link to={`/party/dashboard/${token}/settings`}><button className="p-2 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer">
-                  <SettingsIcon className="w-6 h-6 text-purple-600" />
+                <Link to={`/party/dashboard/${token}/settings`}><button className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-brand-400 transition-colors cursor-pointer">
+                  <SettingsIcon className="w-5 h-5 text-cyber-400" />
                 </button></Link>
-                
+
               </div>
             </div>
           </motion.header>
@@ -200,10 +203,11 @@ export default function Settings () {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-200"
+            className="max-w-4xl mx-auto glass gradient-border rounded-3xl overflow-hidden glow"
           >
-            <div className="bg-gradient-to-r from-purple-500 to-purple-700 p-6">
-              <h1 className="text-3xl font-bold text-white">Party Details</h1>
+            <div className="relative bg-brand-gradient-animated p-6 overflow-hidden">
+              <div className="absolute inset-0 bg-black/10" />
+              <h1 className="relative text-3xl font-bold font-display text-white">Party Details</h1>
             </div>
     
             <div className="p-8 grid gap-6">
@@ -213,8 +217,8 @@ export default function Settings () {
                   whileHover={{ scale: 1.02 }}
                   className="space-y-2"
                 >
-                  <label className="flex items-center text-sm font-medium text-gray-700">
-                    <Users className="w-4 h-4 mr-2 text-purple-500" />
+                  <label className="flex items-center text-sm font-medium text-white/70">
+                    <Users className="w-4 h-4 mr-2 text-cyber-400" />
                     Party Name
                   </label>
                   <input
@@ -222,7 +226,7 @@ export default function Settings () {
                     name="name"
                     value={partyDetails.name}
                     onChange={(e) => {setPartyDetails({ ...partyDetails, name : e.target.value})}}
-                    className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all "
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
                     placeholder={partyDetails.name || 'Enter party name'}
                   />
                 </motion.div>
@@ -232,8 +236,8 @@ export default function Settings () {
                   whileHover={{ scale: 1.02 }}
                   className="space-y-2"
                 >
-                  <label className="flex items-center text-sm font-medium text-gray-700">
-                    <AtSign className="w-4 h-4 mr-2 text-purple-500" />
+                  <label className="flex items-center text-sm font-medium text-white/70">
+                    <AtSign className="w-4 h-4 mr-2 text-cyber-400" />
                     Party Abbreviation
                   </label>
                   <input
@@ -241,7 +245,7 @@ export default function Settings () {
                     name="abbreviation"
                     value={partyDetails.abbreviation}
                     onChange={(e) => {setPartyDetails({ ...partyDetails, abbreviation : e.target.value})}}
-                    className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
                     placeholder={partyDetails.abbreviation ||"Enter abbreviation"}
                   />
                 </motion.div>
@@ -252,8 +256,8 @@ export default function Settings () {
                 whileHover={{ scale: 1.02 }}
                 className="space-y-2"
               >
-                <label className="flex items-center text-sm font-medium text-gray-700">
-                  <Building className="w-4 h-4 mr-2 text-purple-500" />
+                <label className="flex items-center text-sm font-medium text-white/70">
+                  <Building className="w-4 h-4 mr-2 text-cyber-400" />
                   Address
                 </label>
                 <input
@@ -261,19 +265,19 @@ export default function Settings () {
                   name="address"
                   value={partyDetails.address}
                   onChange={(e) => {setPartyDetails({ ...partyDetails, address : e.target.value})}}
-                  className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
                   placeholder={partyDetails.address ||"Enter party address"}
                 />
               </motion.div>
     
               {/* Symbol Upload */}
-              {symbolPreview ? <div className='flex flex-col justify-center items-center'>
+              {symbolPreview ? <div className='flex flex-col justify-center items-center gap-3'>
                 <img
                 src={symbolPreview}
                 alt="Selfie preview"
-                className="mx-auto h-32 w-32 object-cover rounded-lg"
+                className="mx-auto h-32 w-32 object-cover rounded-2xl ring-2 ring-brand-500/50"
               />
-              <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+              <label className="relative cursor-pointer rounded-md font-medium text-cyber-300 hover:text-cyber-400 focus-within:outline-none">
                 <span>Upload a symbol</span>
                 <input
                   type="file"
@@ -282,20 +286,20 @@ export default function Settings () {
                   onChange={(e) => handleFileUpload(e,'symbol')}
                 />
               </label>
-              </div> : 
+              </div> :
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 className="space-y-2"
               >
-                <label className="flex items-center text-sm font-medium text-gray-700">
-                  <Image className="w-4 h-4 mr-2 text-purple-500" />
+                <label className="flex items-center text-sm font-medium text-white/70">
+                  <Image className="w-4 h-4 mr-2 text-cyber-400" />
                   Party Symbol
                 </label>
                 <div
                   
-                  className="border-2 border-dashed border-purple-200 rounded-lg p-6 text-center cursor-pointer hover:border-purple-500 transition-colors"
+                  className="border-2 border-dashed border-white/20 bg-white/5 rounded-2xl p-6 text-center cursor-pointer hover:border-brand-400 transition-colors"
                 >
-                <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+                <label className="relative cursor-pointer rounded-md font-medium text-cyber-300 hover:text-cyber-400 focus-within:outline-none">
                 <span>Upload a symbol</span>
                 <input
                   type="file"
@@ -305,9 +309,9 @@ export default function Settings () {
                 />
               </label>
                   
-                    <Upload className="w-12 h-12 mx-auto text-purple-500 mb-2" />
-                  
-                  <p className="text-sm text-gray-500">Drop your party symbol here or click to upload</p>
+                    <Upload className="w-12 h-12 mx-auto text-cyber-400 mb-2" />
+
+                  <p className="text-sm text-white/50">Drop your party symbol here or click to upload</p>
                 </div>
               </motion.div>
                 }
@@ -317,8 +321,8 @@ export default function Settings () {
                   whileHover={{ scale: 1.02 }}
                   className="space-y-2"
                 >
-                  <label className="flex items-center text-sm font-medium text-gray-700">
-                    <User className="w-4 h-4 mr-2 text-purple-500" />
+                  <label className="flex items-center text-sm font-medium text-white/70">
+                    <User className="w-4 h-4 mr-2 text-cyber-400" />
                     Username
                   </label>
                   <input
@@ -326,7 +330,7 @@ export default function Settings () {
                     name="username"
                     value={partyDetails.username}
                     onChange={(e) => {setPartyDetails({ ...partyDetails, username : e.target.value} ) }}
-                    className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
                     placeholder={partyDetails.username || "Enter username"}
                   />
                 </motion.div>
@@ -336,8 +340,8 @@ export default function Settings () {
                   whileHover={{ scale: 1.02 }}
                   className="space-y-2"
                 >
-                  <label className="flex items-center text-sm font-medium text-gray-700">
-                    <User className="w-4 h-4 mr-2 text-purple-500" />
+                  <label className="flex items-center text-sm font-medium text-white/70">
+                    <User className="w-4 h-4 mr-2 text-cyber-400" />
                     Party Leader Name
                   </label>
                   <input
@@ -345,7 +349,7 @@ export default function Settings () {
                     name="leaderName"
                     value={partyDetails.leaderName}
                     onChange={(e) => {setPartyDetails({ ...partyDetails, leaderName : e.target.value})}}
-                    className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
                     placeholder={partyDetails.leaderName || "Enter party leader name"}
                   />
                 </motion.div>
@@ -358,14 +362,14 @@ export default function Settings () {
                   whileHover={{ scale: 1.02 }}
                   className="space-y-2"
                 >
-                  <label className="flex items-center text-sm font-medium text-gray-700">
-                    <FileText className="w-4 h-4 mr-2 text-purple-500" />
+                  <label className="flex items-center text-sm font-medium text-white/70">
+                    <FileText className="w-4 h-4 mr-2 text-cyber-400" />
                     Party Manifesto (PDF)
                   </label>
                   <div
-                    className="border-2 border-dashed border-purple-200 rounded-lg p-6 text-center cursor-pointer hover:border-purple-500 transition-colors"
+                    className="border-2 border-dashed border-white/20 bg-white/5 rounded-2xl p-6 text-center cursor-pointer hover:border-brand-400 transition-colors"
                   >
-                <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+                <label className="relative cursor-pointer rounded-md font-medium text-cyber-300 hover:text-cyber-400 focus-within:outline-none">
                 <span>Upload a maifesto</span>
                 <input
                   type="file"
@@ -374,11 +378,11 @@ export default function Settings () {
                   onChange={(e) => handleFileUpload(e,'manifesto')}
                 />
               </label>
-                    {manifestoPreview ? <div>Manifesto file uploaded</div> :
+                    {manifestoPreview ? <div className="mt-2 text-sm text-cyber-300 font-medium">Manifesto file uploaded</div> :
                     <div>
-                    
-                    <Upload className="w-8 h-8 mx-auto text-purple-500 mb-2" />
-                    <p className="text-sm text-gray-500">
+
+                    <Upload className="w-8 h-8 mx-auto text-cyber-400 mb-2" />
+                    <p className="text-sm text-white/50">
                       Upload Manifesto (PDF)
                     </p>
                     </div>
@@ -392,14 +396,14 @@ export default function Settings () {
                   whileHover={{ scale: 1.02 }}
                   className="space-y-2"
                 >
-                  <label className="flex items-center text-sm font-medium text-gray-700">
-                    <FileText className="w-4 h-4 mr-2 text-purple-500" />
+                  <label className="flex items-center text-sm font-medium text-white/70">
+                    <FileText className="w-4 h-4 mr-2 text-cyber-400" />
                     Party Constitution (PDF)
                   </label>
                   <div
-                    className="border-2 border-dashed border-purple-200 rounded-lg p-6 text-center cursor-pointer hover:border-purple-500 transition-colors"
+                    className="border-2 border-dashed border-white/20 bg-white/5 rounded-2xl p-6 text-center cursor-pointer hover:border-brand-400 transition-colors"
                   >
-                <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+                <label className="relative cursor-pointer rounded-md font-medium text-cyber-300 hover:text-cyber-400 focus-within:outline-none">
                 <span>Upload a constitution</span>
                 <input
                   type="file"
@@ -408,11 +412,11 @@ export default function Settings () {
                   onChange={(e) => handleFileUpload(e,'constitution')}
                 />
               </label>
-                    {constitutionPreview ? <div>Constitution file uploaded</div> :
+                    {constitutionPreview ? <div className="mt-2 text-sm text-cyber-300 font-medium">Constitution file uploaded</div> :
                     <div>
-                    
-                    <Upload className="w-8 h-8 mx-auto text-purple-500 mb-2" />
-                    <p className="text-sm text-gray-500">
+
+                    <Upload className="w-8 h-8 mx-auto text-cyber-400 mb-2" />
+                    <p className="text-sm text-white/50">
                       Upload Constitution (PDF)
                     </p>
                     </div>
@@ -426,7 +430,7 @@ export default function Settings () {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmit}
-                className="w-full bg-gradient-to-r from-purple-500 to-purple-700 text-white py-3 px-6 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                className="btn-primary w-full"
               >
                 Save Party Details
               </motion.button>

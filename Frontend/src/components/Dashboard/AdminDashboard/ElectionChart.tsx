@@ -2,14 +2,15 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { BarChart2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_URL, type ChartTooltipProps } from '../../../utils/util';
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-indigo-100">
-          <p className="font-bold text-indigo-700">{`${label}`}</p>
-          <p className="text-gray-700">
-            <span className="font-semibold">Votes:</span> {payload[0].value.toLocaleString()}
+        <div className="rounded-xl border border-white/15 bg-ink-800/95 p-4 shadow-xl backdrop-blur">
+          <p className="font-bold text-cyber-300 font-display">{`${label}`}</p>
+          <p className="text-white/80">
+            <span className="font-semibold text-white/60">Votes:</span> {payload[0].value.toLocaleString()}
           </p>
         </div>
       );
@@ -23,12 +24,12 @@ type PartyData = {
     color : string;
 }
 const COLORS = [
-  '#4C51BF', '#6B46C1', '#805AD5', '#B794F4', '#553C9A',
-  '#2B6CB0', '#3182CE', '#4299E1', '#63B3ED', '#2C5282',
-  '#2C7A7B', '#38B2AC', '#4FD1C5', '#81E6D9', '#234E52',
-  '#2F855A', '#38A169', '#48BB78', '#9AE6B4', '#22543D',
-  '#9C4221', '#C05621', '#DD6B20', '#ED8936', '#7B341E',
-  '#742A2A', '#9B2C2C', '#C53030', '#E53E3E', '#742A2A'
+  '#8b5cf6', '#d946ef', '#22d3ee', '#a78bfa', '#e879f9',
+  '#67e8f9', '#7c3aed', '#c026d3', '#06b6d4', '#c4b5fd',
+  '#a855f7', '#f472b6', '#38bdf8', '#9333ea', '#ec4899',
+  '#0ea5e9', '#6d28d9', '#db2777', '#0891b2', '#7e22ce',
+  '#be185d', '#0e7490', '#5b21b6', '#a21caf', '#155e75',
+  '#4c1d95', '#831843', '#164e63', '#581c87', '#500724'
 ];
 export const ElectionChart = () => {
   const [ ids, setIds] = useState([]);
@@ -36,7 +37,7 @@ export const ElectionChart = () => {
   useEffect(() => {
       const getPartyIds = async () => {
           try {
-            const response = await axios.get("http://localhost:3000/api/v2/getPartiesId");
+            const response = await axios.get(`${API_URL}/api/v2/getPartiesId`);
             if (response.data?.partyIds) {
               setIds(response.data.partyIds);
             }
@@ -49,7 +50,7 @@ export const ElectionChart = () => {
 
   const getFunction = async (partyId: string) => {
     try {
-      const response = await axios.get("http://localhost:3000/api/v3/partyStatus", {
+      const response = await axios.get(`${API_URL}/api/v3/partyStatus`, {
         params: { partyId },
       });
       return response.data;
@@ -83,9 +84,11 @@ export const ElectionChart = () => {
 
   return(
         
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-indigo-100 h-full">
-  <h2 className="text-xl font-bold mb-4 text-indigo-700 flex items-center">
-    <BarChart2 size={20} className="mr-2" />
+    <div className="glass p-6 rounded-2xl h-full">
+  <h2 className="text-xl font-bold mb-5 font-display text-white flex items-center gap-2">
+    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-white glow">
+      <BarChart2 size={18} />
+    </span>
     Current Votes Stats
   </h2>
   <div className="h-80">
@@ -101,25 +104,25 @@ export const ElectionChart = () => {
         barSize={40}
         barGap={8}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-        <XAxis 
-          dataKey="label" 
-          angle={-45} 
-          textAnchor="end" 
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+        <XAxis
+          dataKey="label"
+          angle={-45}
+          textAnchor="end"
           height={60}
           interval={0}
-          tick={{ fill: '#4B5563', fontSize: 12 }}
-          axisLine={{ stroke: '#D1D5DB' }}
+          tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 12 }}
+          axisLine={{ stroke: 'rgba(255,255,255,0.15)' }}
         />
-        <YAxis 
-          tick={{ fill: '#4B5563', fontSize: 12 }}
-          axisLine={{ stroke: '#D1D5DB' }}
+        <YAxis
+          tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 12 }}
+          axisLine={{ stroke: 'rgba(255,255,255,0.15)' }}
           tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}
         />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend 
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+        <Legend
           wrapperStyle={{ paddingTop: 20 }}
-          formatter={(value) => <span className="text-gray-700">{value}</span>}
+          formatter={(value) => <span className="text-white/70">{value}</span>}
         />
         <Bar 
           dataKey="value" 

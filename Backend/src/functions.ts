@@ -1,5 +1,6 @@
 import vision from '@google-cloud/vision'
 import {bucket} from './index.js'
+import { gcpClientOptions } from './gcpAuth.js'
 
 
 export const generateVoterIdNumber = (firstName : string,lastName : string, gender : string, documentNumber : number, mobile : number) => {
@@ -28,9 +29,7 @@ export const generateVoterIdNumber = (firstName : string,lastName : string, gend
 }
 
 export const extractTextFromImage = async (file: string) => {
-    const client = new vision.ImageAnnotatorClient({
-        keyFilename : "src/skilled-circle-448817-d1-e3457c9445ad.json"
-    });
+    const client = new vision.ImageAnnotatorClient(gcpClientOptions());
     try {
         const [result] = await client.textDetection(file);
         const text = result.textAnnotations?.[0]?.description || "";

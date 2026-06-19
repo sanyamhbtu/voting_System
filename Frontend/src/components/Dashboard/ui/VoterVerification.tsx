@@ -2,6 +2,7 @@ import axios from "axios"
 import { useEffect, useState } from "react"
 import DetailItem from "./DetailItem";
 import { Skelaton } from "./Skelaton";
+import { API_URL, type ApiError } from '../../../utils/util';
 export default function VoterVerification({setRender} : {setRender : (render : string) => void}) {
   const [loading, setLoading] = useState(false);
     const [voter, setVoter] = useState({
@@ -22,11 +23,11 @@ export default function VoterVerification({setRender} : {setRender : (render : s
       const getUrl = async (file: string) => {
         try {
           const response = await axios.post(
-            "http://localhost:3000/api/v1/getPublicUrl",
+            `${API_URL}/api/v1/getPublicUrl`,
             { file }
           );
           return response.data.url;
-        } catch (error) {
+        } catch {
           alert("Failed to fetch document URL. Please try again later.");
           return "";
         }
@@ -36,7 +37,7 @@ export default function VoterVerification({setRender} : {setRender : (render : s
         const fetchVoterDetails = async () => {
             try {
               const response = await axios.get(
-                "http://localhost:3000/api/v1/getVoter",
+                `${API_URL}/api/v1/getVoter`,
                 { withCredentials: true }
               );
         
@@ -58,7 +59,7 @@ export default function VoterVerification({setRender} : {setRender : (render : s
                 selfie: selfieUrl,
                 documentUrl: documentUrl
               });
-            } catch (error) {
+            } catch {
               alert("Internal Server Error. Please try again later.");
             }
           };
@@ -67,7 +68,7 @@ export default function VoterVerification({setRender} : {setRender : (render : s
     const handleVerification = async () => {
         setLoading(true);
         try {
-            const verification = await axios.post('http://localhost:3000/api/v1/verify', {
+            const verification = await axios.post(`${API_URL}/api/v1/verify`, {
                 voterId: voter.voterId,
                 file : voter.documentUrl
             });
@@ -76,7 +77,7 @@ export default function VoterVerification({setRender} : {setRender : (render : s
               setLoading(false);
               return;
             }
-                const registerVoter = await axios.post('http://localhost:3000/api/v3/registerVoter',
+                const registerVoter = await axios.post(`${API_URL}/api/v3/registerVoter`,
                   {},
                   {withCredentials : true}
                 )
@@ -88,8 +89,8 @@ export default function VoterVerification({setRender} : {setRender : (render : s
                 }
                 alert("Congratulation! You have been verified");
                 setRender("VoterMain");
-        } catch (error : any) {
-            const errorMsg = await error.response.data.message
+        } catch (error) {
+            const errorMsg = await (error as ApiError).response?.data?.message
             alert(errorMsg)
             setRender("VoterMain")
         } finally{
@@ -99,10 +100,10 @@ export default function VoterVerification({setRender} : {setRender : (render : s
 
     }
   return (
-    loading ? <Skelaton /> :
-    <div className="min-h-screen bg-white">
+    loading ? <div className="min-h-screen bg-aurora text-white flex items-center justify-center"><Skelaton /></div> :
+    <div className="min-h-screen bg-aurora text-white">
         <main className="container mx-auto p-4 md:p-8">
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+        <div className="glass gradient-border rounded-3xl p-6 md:p-8">
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-2/3 lg:pr-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -122,16 +123,9 @@ export default function VoterVerification({setRender} : {setRender : (render : s
             <div className="lg:w-1/3 mt-6 lg:mt-0">
               <DetailItem label="Selfie" value={voter.selfie} type="image" className="mb-6" />
               <DetailItem label="Uploaded Document" value={voter.documentUrl} type="image" className="mb-6"  />
-              <button className="relative overflow-hidden px-6 py-3 rounded-full
-                                bg-gradient-to-r from-purple-500 to-purple-700
-                                text-white font-semibold
-                                transform transition-all duration-300 ease-in-out
-                                hover:scale-105 hover:shadow-lg
-                                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50
-                                active:scale-95 cursor-pointer
+              <button className="btn-primary w-full cursor-pointer
                                 disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleVerification()}>
                     <span className="relative z-10">Verify now</span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-purple-800 opacity-0 transition-opacity duration-300 ease-in-out hover:opacity-100"aria-hidden="true"/>
                 </button>
             </div>
           </div>

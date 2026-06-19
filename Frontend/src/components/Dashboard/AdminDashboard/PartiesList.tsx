@@ -3,6 +3,7 @@ import { Ban, CheckCircle } from 'lucide-react';
 import { useElectionStore } from '../AdminStore/store';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../../utils/util';
 
 type Party = {
     _id: string;
@@ -18,14 +19,14 @@ export const PartiesList = () => {
     useEffect(() => {
         const fetchpartyList = async () => {
           try {
-            const response = await axios.get('http://localhost:3000/api/v2/parties');
+            const response = await axios.get(`${API_URL}/api/v2/parties`);
             if(response.status === 200 ){
                 setPartyList(response.data.parties);
                 
             }else{
                 setPartyList([]);
             }
-          } catch (error) {
+          } catch {
             alert("Something went wrong. Please try again!");
             setPartyList([]);
           }
@@ -38,7 +39,7 @@ export const PartiesList = () => {
           return;
         }
         try {
-          const response = await axios.post('http://localhost:3000/api/v2/toggleBlock', {
+          const response = await axios.post(`${API_URL}/api/v2/toggleBlock`, {
             voterId: voterId,
           });
       
@@ -61,7 +62,7 @@ export const PartiesList = () => {
           return;
         }
           try {
-            const response = await axios.post('http://localhost:3000/api/v2/toggleBlock', {
+            const response = await axios.post(`${API_URL}/api/v2/toggleBlock`, {
               voterId: voterId,
             });
         
@@ -79,43 +80,44 @@ export const PartiesList = () => {
 
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-y-scroll">
-          <div className="p-4 border-b border-gray-100">
-            <h2 className="text-lg font-semibold">Parties Management</h2>
+        <div className="glass rounded-2xl overflow-hidden overflow-y-scroll">
+          <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 bg-ink-800/70 backdrop-blur border-b border-white/10">
+            <h2 className="text-base font-bold font-display text-white">Parties Management</h2>
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-white/40">Status</span>
           </div>
-          <div className="divide-y divide-gray-100 ">
+          <div className="divide-y divide-white/5">
             {partyList.map((voter) => (
               <motion.div
                 key={voter._id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center justify-between p-4 hover:bg-gray-50"
+                className="flex items-center justify-between px-5 py-4 transition hover:bg-white/5"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${voter.verified ? 'bg-green-500' : 'bg-gray-300'}`} />
-                  <span className="font-medium">{voter.partyName}</span>
+                  <div className={`w-2 h-2 rounded-full ${voter.verified ? 'bg-cyber-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]' : 'bg-white/25'}`} />
+                  <span className="font-medium text-white/90">{voter.partyName}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className={`text-sm ${!voter.isBlocked ? 'text-green-500' : 'text-red-500'}`}>
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${!voter.isBlocked ? 'bg-green-400/15 text-green-400' : 'bg-red-400/15 text-red-400'}`}>
                     {voter.isBlocked ? 'Not Registered' : 'Registered'}
                   </span>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => toggleVoterBlock(voter._id)}
-                    className={`p-2 rounded-lg ${
+                    className={`p-2 rounded-lg transition ${
                       voter.isBlocked
-                        ? 'text-red-500 hover:bg-red-50'
-                        : 'text-gray-400 hover:bg-gray-100'
+                        ? 'text-red-400 hover:bg-red-500/10'
+                        : 'text-white/50 hover:bg-white/10'
                     }`}
                   >
                     {voter.isBlocked ? <div className='relative group' onClick={() => handleUnblocked(voter.voterId)}>
-                  <Ban className="w-5 h-5 cursor-pointer text-red-500" />
+                  <Ban className="w-5 h-5 cursor-pointer text-red-400" />
                   <span className="absolute right-2  bottom-5 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                     Banned
                   </span>
                   </div> : <div className='relative group' onClick={() => handleBlocked(voter.voterId)}>
-                  <CheckCircle className="w-5 h-5 cursor-pointer  text-green-500" />
+                  <CheckCircle className="w-5 h-5 cursor-pointer  text-cyber-400" />
                   <span className="absolute right-2  bottom-5 bg-green-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                     Participant
                   </span>

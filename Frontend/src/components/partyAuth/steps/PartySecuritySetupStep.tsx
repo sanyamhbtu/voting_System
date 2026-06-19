@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Phone, User, Lock, Mail } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../../../utils/util';
 
 export interface SecurityInfo {
     mobile: string;
@@ -62,7 +63,7 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
       return;
     }
     try {
-      const voter = await axios.post("http://localhost:3000/api/v2/emailcheck", {
+      const voter = await axios.post(`${API_URL}/api/v2/emailcheck`, {
         email : data.email
       })
       if(voter.status !== 200){
@@ -70,7 +71,7 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
         return;
       }
 
-    } catch (error) {
+    } catch {
       alert("Server down. Please try again later.")
       return;
     }
@@ -81,11 +82,11 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white/70 mb-1.5">
           Mobile Number
         </label>
         <div className="relative">
-          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 h-5 w-5" />
           <input
             {...register('mobile', {
               required: 'Mobile number is required',
@@ -94,32 +95,32 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
                 message: 'Please enter a valid 10-digit mobile number'
               }
             })}
-            className="w-full pl-10 pr-24 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+            className="w-full rounded-xl bg-white/5 border border-white/10 pl-10 pr-28 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
             placeholder="Enter your mobile number"
           />
           <button
             type="button"
             onClick={handleSendOTP}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 text-white px-4 py-1 rounded-md text-sm hover:bg-purple-700 transition duration-300"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-brand-gradient text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:brightness-110 transition duration-300"
           >
             Send OTP
           </button>
         </div>
         {errors.mobile && (
-          <p className="mt-1 text-sm text-red-600">{errors.mobile.message}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.mobile.message}</p>
         )}
       </div>
 
       {otpSent && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-white/70 mb-1.5">
             Enter OTP
           </label>
           <input
             type="text"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            className="w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+            className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 tracking-[0.4em] focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
             placeholder="Enter 6-digit OTP"
             maxLength={6}
           />
@@ -127,11 +128,11 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white/70 mb-1.5">
           Username
         </label>
         <div className="relative">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 h-5 w-5" />
           <input
             {...register('username', {
               required: 'Username is required',
@@ -140,22 +141,22 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
                 message: 'Username must be at least 4 characters'
               }
             })}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+            className="w-full rounded-xl bg-white/5 border border-white/10 pl-10 pr-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
             placeholder="Choose a username"
           />
         </div>
          {/* <boltAction type="file" filePath="src/components/auth/steps/SecuritySetupStep.tsx" /> */}
         {errors.username && (
-          <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.username.message}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white/70 mb-1.5">
           Password
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" onClick={() =>{setShowPassword(!showPassword)}} />
+          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 h-5 w-5 cursor-pointer" onClick={() =>{setShowPassword(!showPassword)}} />
           <input
             {...register('password', {
               required: 'Password is required',
@@ -169,12 +170,12 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
               }
             })}
             type={showPassword ? 'text' : 'password'}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+            className="w-full rounded-xl bg-white/5 border border-white/10 pl-10 pr-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
             placeholder="Create a strong password"
           />
         </div>
         {errors.password && (
-          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
         )}
         <div className="mt-2">
           <div className="flex gap-2 mb-1">
@@ -183,13 +184,13 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
                 key={i}
                 className={`h-2 flex-1 rounded-full ${
                   i < getPasswordStrength(password)
-                    ? 'bg-green-500'
-                    : 'bg-gray-200'
+                    ? 'bg-brand-gradient'
+                    : 'bg-white/10'
                 }`}
               />
             ))}
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-white/50">
             Password strength: {
               ['Weak', 'Fair', 'Good', 'Strong'][getPasswordStrength(password) - 1] || 'Very Weak'
             }
@@ -198,11 +199,11 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white/70 mb-1.5">
           Email
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 h-5 w-5" />
           <input
             {...register('email', {
               pattern: {
@@ -210,12 +211,12 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
                 message: 'Please enter a valid email address'
               }
             })}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+            className="w-full rounded-xl bg-white/5 border border-white/10 pl-10 pr-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition"
             placeholder="Enter your email address"
           />
         </div>
         {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>
         )}
       </div>
 
@@ -223,13 +224,13 @@ export const PartySecuritySetupStep: React.FC<Props> = ({
         <button
           type="button"
           onClick={onPrevious}
-          className="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-100 transition duration-300"
+          className="btn-ghost"
         >
           Previous
         </button>
         <button
           type="submit"
-          className="bg-purple-600 text-white py-2 px-6 rounded-lg hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 transition duration-300"
+          className="btn-primary"
         >
           Next Step
         </button>

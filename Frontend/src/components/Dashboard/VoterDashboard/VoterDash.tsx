@@ -9,6 +9,7 @@ import RegisteredParties from './RegisteredParties.tsx';
 import VoterSettings from './VoterSettings.tsx';
 import DynamicChart from './DynamicChart.tsx';
 import Votenow from './Votenow.tsx';
+import { API_URL } from '../../../utils/util';
 function VoterDash() {
   const [ render , setRender] = useState<string>("VoterMain")
   const [firstName, setFirstName] = useState<string>("Unknown");
@@ -18,7 +19,7 @@ function VoterDash() {
   useEffect(() => {
     try {
       const getVoter = async() => {
-        const response = await axios.get('http://localhost:3000/api/v1/getVoter', {withCredentials : true});
+        const response = await axios.get(`${API_URL}/api/v1/getVoter`, {withCredentials : true});
         if(response.status !== 200){
            alert(response.data.message);
            return;

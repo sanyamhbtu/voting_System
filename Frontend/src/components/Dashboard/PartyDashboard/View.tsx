@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import PartyDetails from './PartyDetails';
 import PDFViewer from './PDFViewer';
 import axios from 'axios';
+import { API_URL } from '../../../utils/util';
 
 export interface PartyInfo {
     name: string;
@@ -47,7 +48,7 @@ export default function View () {
       useEffect(() => {
         const fetchPartyData = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/v2/partyDetails',{
+                const response = await axios.get(`${API_URL}/api/v2/partyDetails`,{
                     withCredentials : true
                 });
                 if(response.status === 200){
@@ -68,7 +69,7 @@ export default function View () {
                 }else{
                     alert("Party is not login")
                 }
-            } catch (error) {
+            } catch {
                 alert("Error in fetching party data");
             }
         }
@@ -79,7 +80,7 @@ export default function View () {
         if (!party.partySymbol) return;
         const getPublicUrl = async() => {
           try{
-              const publicUrl = await axios.post("http://localhost:3000/api/v1/getPublicUrl",{
+              const publicUrl = await axios.post(`${API_URL}/api/v1/getPublicUrl`,{
                 file : party.partySymbol
               })
               const url = publicUrl.data.url
@@ -97,7 +98,7 @@ export default function View () {
         if (!party.manifesto) return;
         const getPublicUrl = async() => {
           try{
-              const publicUrl = await axios.post("http://localhost:3000/api/v1/getPublicUrl",{
+              const publicUrl = await axios.post(`${API_URL}/api/v1/getPublicUrl`,{
                 file : party.manifesto
               })
               const url = publicUrl.data.url
@@ -115,7 +116,7 @@ export default function View () {
         if (!party.constitution) return;
         const getPublicUrl = async() => {
           try{
-              const publicUrl = await axios.post("http://localhost:3000/api/v1/getPublicUrl",{
+              const publicUrl = await axios.post(`${API_URL}/api/v1/getPublicUrl`,{
                 file : party.constitution
               })
               const url = publicUrl.data.url
@@ -131,7 +132,7 @@ export default function View () {
       },[party.constitution])
 
       return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-aurora text-white">
           <PartyDetails 
             publicUrl = {partySymbol}
             party={party} 

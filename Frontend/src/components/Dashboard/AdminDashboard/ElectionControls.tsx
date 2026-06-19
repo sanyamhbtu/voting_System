@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Play, Square, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../../utils/util';
 
 export default function ElectionControls () {
     const [loading, setLoading] = useState<boolean>(false);
@@ -12,7 +13,7 @@ export default function ElectionControls () {
       setLoading(true);
         try {
             
-            const startElection = await axios.post('http://localhost:3000/api/v3/startElection',{
+            const startElection = await axios.post(`${API_URL}/api/v3/startElection`,{
               duration : duration
             });
             if(startElection.status === 200){
@@ -31,7 +32,7 @@ export default function ElectionControls () {
       setLoading(true);
       try {
         
-          const endElection = await axios.post('http://localhost:3000/api/v3/endElection');
+          const endElection = await axios.post(`${API_URL}/api/v3/endElection`);
           if(endElection.status === 200){
             alert(endElection.data.message);
             setActive(false);
@@ -47,7 +48,7 @@ export default function ElectionControls () {
     const handleResetElection = async() => {
       setLoading(true);
         try {
-            const resetElection = await axios.post('http://localhost:3000/api/v4/resetElection');
+            const resetElection = await axios.post(`${API_URL}/api/v4/resetElection`);
             if(resetElection.status === 200){
               alert(resetElection.data.message);
               setActive(false);
@@ -66,19 +67,19 @@ export default function ElectionControls () {
       
     }
   return (
-    <div className="flex gap-4 relative">
+    <div className="flex gap-3 relative">
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         disabled={loading}
         onClick={() => active ? handleEndElection() : setIsVisible(true)}
-        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer ${
+        className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed ${
           active
-            ? 'bg-red-500 hover:bg-red-600 text-white'
-            : 'bg-purple-600 hover:bg-purple-700 text-white'
+            ? 'bg-gradient-to-r from-red-500 to-rose-600 shadow-[0_8px_24px_-8px_rgba(244,63,94,0.7)] hover:brightness-110'
+            : 'btn-primary'
         }`}
       >
-          
+
         {active ? (
           <>
             <Square className="w-5 h-5" />
@@ -92,25 +93,31 @@ export default function ElectionControls () {
         )}
       </motion.button>
       {isVisible && (
-            <div className="absolute top-10 right-[20vw] bg-blue-50 shadow-md p-3 rounded w-[50vw] h-[50vh] flex flex-col items-center justify-center gap-12 z-10">
-              <label htmlFor="duration" className="text-black text-2xl font-bold">Enter Duration</label>
-              <input
-                id="duration"
-                type="number"
-                placeholder="Enter duration"
-                className="border-b-black text-black p-2 w-full"
-                onChange={(e) => setDuration(Number(e.target.value))}
-              />
-              <div className='flex items-center justify-center gap-10'>
-              <button
-                onClick={handleSubmit}
-                className="border rounded bg-blue-300 p-1 cursor-pointer text-black"
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                className="gradient-border w-[90vw] max-w-md rounded-3xl bg-ink-800/90 p-8 glow"
               >
-                Submit
-              </button>
-              <button onClick={() =>setIsVisible(false)} className="border rounded bg-red-300 p-1 cursor-pointer text-black">Cancel</button>
-              </div>
-              
+                <h3 className="text-2xl font-bold font-display gradient-text text-center">Start Election</h3>
+                <label htmlFor="duration" className="mt-6 block text-sm font-medium text-white/70">Election duration (minutes)</label>
+                <input
+                  id="duration"
+                  type="number"
+                  placeholder="Enter duration"
+                  className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40"
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                />
+                <div className='mt-8 flex items-center justify-center gap-4'>
+                <button
+                  onClick={handleSubmit}
+                  className="btn-primary flex-1 cursor-pointer"
+                >
+                  Submit
+                </button>
+                <button onClick={() =>setIsVisible(false)} className="btn-ghost flex-1 cursor-pointer">Cancel</button>
+                </div>
+              </motion.div>
             </div>
           )}
       <motion.button
@@ -118,7 +125,7 @@ export default function ElectionControls () {
         whileTap={{ scale: 0.95 }}
         disabled={loading}
         onClick={handleResetElection}
-        className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors cursor-pointer"
+        className="btn-ghost px-6 py-3 cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed"
       >
         <RotateCcw className="w-5 h-5" />
         Reset

@@ -1,19 +1,21 @@
 import React from 'react';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import LOGO from '../../../assets/logo.png'
-import { 
-  Bell, 
-  Settings, 
-  Sun, 
+import {
+  Bell,
+  Settings,
+  Sun,
   Moon,
-  UsersRound , 
-  Calendar, 
-  BarChart2, 
-  TrendingUp, 
-  Share2, 
-  Menu, 
+  UsersRound ,
+  Calendar,
+  BarChart2,
+  TrendingUp,
+  Share2,
+  Menu,
   X ,
-  House
+  House,
+  Vote
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -37,38 +39,40 @@ export default function VoterLayout({ children, firstName, lastName, setRender }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-aurora text-white">
       {/* Header */}
-      <header className="fixed top-0 w-full bg-purple-700 text-white z-50">
+      <header className="fixed top-0 w-full z-50 glass border-b border-white/10 backdrop-blur-xl">
         <div className="px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden"
+              className="lg:hidden text-white/80 hover:text-white transition"
             >
               {isSidebarOpen ? <X /> : <Menu />}
             </button>
             <div className="flex items-center space-x-2">
-              <img src={LOGO} alt="logo" className='w-10 h-10 rounded-full' />
-              <span className="text-xl font-bold">ElectCode</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient glow overflow-hidden">
+                <img src={LOGO} alt="logo" className='w-10 h-10 rounded-xl object-cover' />
+              </div>
+              <span className="text-xl font-bold font-display">VoteChain</span>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-6">
-            <button className="hover:text-purple-200">
+
+          <div className="flex items-center space-x-5">
+            <button className="text-white/70 transition hover:text-cyber-300">
               <Bell className="w-6 h-6" />
             </button>
-            <button className="hover:text-purple-200">
+            <button className="text-white/70 transition hover:text-cyber-300">
               <Settings className="w-6 h-6" />
             </button>
-            <button 
+            <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="hover:text-purple-200"
+              className="text-white/70 transition hover:text-cyber-300"
             >
               {isDarkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
             </button>
-            <div className="hidden md:block">
-              <span className="font-medium">Welcome, {firstName} {lastName}</span>
+            <div className="hidden md:flex items-center gap-2 rounded-full glass px-4 py-1.5">
+              <span className="text-sm font-medium text-white/85">Welcome, <span className="gradient-text font-semibold">{firstName} {lastName}</span></span>
             </div>
           </div>
         </div>
@@ -76,21 +80,24 @@ export default function VoterLayout({ children, firstName, lastName, setRender }
 
       {/* Sidebar */}
       <aside className={`
-        fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg transform 
+        fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 glass border-r border-white/10 transform
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         transition-transform duration-200 ease-in-out lg:translate-x-0 z-40
       `}>
         <nav className="p-4">
-          <ul className="space-y-2">
+          <ul className="space-y-1.5">
             {navItems.map((item, index) => (
               <li key={index}>
-                <button onClick={() => setRender(item.label)}
-                  className="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:cursor-pointer
-                    hover:bg-purple-50 hover:text-purple-700 transition-colors duration-200"
+                <motion.button
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setRender(item.label)}
+                  className="group flex w-full items-center space-x-3 px-4 py-3 text-white/70 rounded-xl hover:cursor-pointer
+                    hover:bg-white/10 hover:text-white transition-colors duration-200"
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </button>
+                  <span className="text-cyber-300 transition group-hover:text-cyber-400">{item.icon}</span>
+                  <span className="font-medium">{item.label}</span>
+                </motion.button>
               </li>
             ))}
           </ul>
@@ -109,43 +116,49 @@ export default function VoterLayout({ children, firstName, lastName, setRender }
 
       {/* Footer */}
       <footer className={`
-        bg-white  py-4 text-center text-sm text-gray-600
+        border-t border-white/10 bg-ink-900/60 py-10 px-6 text-sm text-white/60
         ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}
       `}>
-        <div className="grid md:grid-cols-3 gap-8">
-         
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">About Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">How It Works</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Security</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">FAQ</a></li>
-            </ul>
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-8 flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient">
+              <Vote className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-lg font-bold font-display text-white">VoteChain</span>
           </div>
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Resources</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Documentation</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">API</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Support</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Contact</a></li>
-            </ul>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-white/80 mb-4">Quick Links</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">About Us</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">How It Works</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Security</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">FAQ</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-white/80 mb-4">Resources</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Documentation</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">API</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Support</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-white/80 mb-4">Legal</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Cookie Policy</a></li>
+                <li><a href="#" className="text-white/55 hover:text-cyber-300 transition-colors">Compliance</a></li>
+              </ul>
+            </div>
           </div>
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Cookie Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Compliance</a></li>
-            </ul>
+          <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/45">
+            <p>&copy; {new Date().getFullYear()} VoteChain. All rights reserved.</p>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Digital Voting Platform. All rights reserved.</p>
-        </div>
-  
       </footer>
     </div>
   );

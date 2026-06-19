@@ -1,0 +1,11 @@
+node_modules
+dist
+npm-debug.log
+.env
+.env.*
+!.env.example
+# Never bake service-account keys into the image — use GCP_CREDENTIALS_JSON env instead
+*-service-account*.json
+skilled-circle-*.json
+.git
+errors.txt

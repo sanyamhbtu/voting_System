@@ -2,6 +2,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { API_URL } from '../../../utils/util';
 
 type TEAM_MEMBERS = {
     id : string,
@@ -24,24 +25,24 @@ export default function TeamSection () {
     useEffect(() => {
         const getTeamMembers = async () => {
             try {
-                const team = await axios.get('http://localhost:3000/api/v2/getTeamMembers',{
+                const team = await axios.get(`${API_URL}/api/v2/getTeamMembers`,{
                     withCredentials : true
                 })
                 if(team.status === 200){
                     const memebers = team.data.teamMembers;
                     const updatedMembers : TEAM_MEMBERS[] = await Promise.all(memebers.map(async(member : TEAM_MEMBERS) =>{
                             try {
-                                const avatarResponse = await axios.post('http://localhost:3000/api/v1/getPublicUrl',{
+                                const avatarResponse = await axios.post(`${API_URL}/api/v1/getPublicUrl`,{
                                     file : member.avatar
                                 })
                                 return { ...member, avatar: avatarResponse.data.url };
-                            } catch (error) {
+                            } catch {
                                 return member;
                             }
                     }));        
                     setTeamMembers(updatedMembers);
                 }
-            } catch (error) {
+            } catch {
                 alert("Error in fetching team members. Please try again!")
             }
         }
@@ -49,7 +50,7 @@ export default function TeamSection () {
     },[])
     const handleAddTeamMember = async () => {
         try {
-            const teamMember = await axios.post('http://localhost:3000/api/v2/addTeamMember',{
+            const teamMember = await axios.post(`${API_URL}/api/v2/addTeamMember`,{
                 name : teamDetails?.name,
                 role : teamDetails?.role,
                 avatar : teamDetails?.avatar
@@ -78,7 +79,7 @@ export default function TeamSection () {
       const formData = new FormData();
       formData.append('file', file);
       try {
-        const upload = await axios.post('http://localhost:3000/api/v1/upload', formData, {
+        const upload = await axios.post(`${API_URL}/api/v1/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         
@@ -91,7 +92,7 @@ export default function TeamSection () {
         const fileUrl = upload.data.fileUrl;
         setTeamDetails({...teamDetails, avatar : fileUrl});
         URL.revokeObjectURL(localPreview);
-      } catch (error) {
+      } catch {
         alert("error to connect database")
         URL.revokeObjectURL(localPreview);
         setSelfiePreview('');
@@ -99,71 +100,76 @@ export default function TeamSection () {
     }
 }
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 ">
-          <h2 className="text-xl font-semibold mb-6">Party Team</h2>
-          
-          <div className="space-y-4 h-[35vh] overflow-y-scroll">
+        <div className="glass gradient-border rounded-3xl p-6 h-full">
+          <h2 className="text-xl font-semibold font-display mb-6">Party Team</h2>
+
+          <div className="space-y-3 h-[35vh] overflow-y-scroll pr-1">
             {teamMembers.map((member, index) => (
               <motion.div
                 key={member.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-center space-x-4 p-3 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex items-center space-x-4 p-3 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.07] hover:border-brand-400/40 transition-colors"
               >
-                <img 
-                  src={member.avatar} 
+                <img
+                  src={member.avatar}
                   alt={member.name}
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-brand-500/50"
                 />
                 <div>
-                  <h3 className="font-medium">{member.name}</h3>
-                  <p className="text-sm text-gray-600">{member.role}</p>
+                  <h3 className="font-medium text-white">{member.name}</h3>
+                  <p className="text-sm text-white/60">{member.role}</p>
                 </div>
               </motion.div>
             ))}
           </div>
-    
+
           <motion.button
             whileHover={{ scale: 1.02 }}
-            className=" cursor-pointer w-full mt-6 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+            className="btn-primary cursor-pointer w-full mt-6"
             onClick={() => setActive(true)}
           >
             Add Team Member
           </motion.button>
-           {active && <div className='absolute top-10 right-[10vw] w-[70vw] h-[90vh] bg-purple-300/50 backdrop-blur-3xl flex flex-col justify-center items-center gap-5 rounded-xl'>
-                <h1 className='text-3xl font-bold bg-clip-text text-black'>Add Team Member</h1>
-                <div className='w-[50vw] '>
-                    <label id='name' className='block text-sm font-medium text-gray-700 mb-1'>Name:</label>
-                    <input id='name' className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300' 
+           {active && <div className='fixed inset-0 z-50 bg-black/60 backdrop-blur flex items-center justify-center p-4'>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className='glass gradient-border w-full max-w-xl flex flex-col items-center gap-5 rounded-3xl p-8'
+                >
+                <h1 className='text-3xl font-bold font-display gradient-text'>Add Team Member</h1>
+                <div className='w-full'>
+                    <label id='name' className='block text-sm font-medium text-white/70 mb-1'>Name:</label>
+                    <input id='name' className='w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition'
                     placeholder="Enter team memeber name"
                     onChange={e => setTeamDetails({...teamDetails, name:e.target.value})}
                      />
                 </div>
-                <div className='w-[50vw] '>
-                    <label id='role' className='block text-sm font-medium text-gray-700 mb-1'>Role:</label>
-                    <input id='role' className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300' 
+                <div className='w-full'>
+                    <label id='role' className='block text-sm font-medium text-white/70 mb-1'>Role:</label>
+                    <input id='role' className='w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition'
                     placeholder="Enter team memeber role"
                     onChange={e => setTeamDetails({...teamDetails, role:e.target.value})}
                      />
                 </div>
-                <div className='w-[50vw]'>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className='w-full'>
+                    <label className="block text-sm font-medium text-white/70 mb-1">
                     Selfie Upload
                     </label>
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-white/20 hover:border-brand-400 bg-white/5 rounded-2xl transition-colors">
                     <div className="space-y-1 text-center">
                         {selfiePreview ? (
                         <img
                             src={selfiePreview}
                             alt="Selfie preview"
-                            className="mx-auto h-32 w-32 object-cover rounded-lg"
+                            className="mx-auto h-32 w-32 object-cover rounded-2xl ring-2 ring-brand-500/50"
                         />
                         ) : (
-                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                        <Upload className="mx-auto h-12 w-12 text-cyber-400" />
                         )}
-                        <div className="flex text-sm text-gray-600">
-                        <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+                        <div className="flex text-sm text-white/60 justify-center">
+                        <label className="relative cursor-pointer rounded-md font-medium text-cyber-300 hover:text-cyber-400 focus-within:outline-none">
                             <span>Upload a file</span>
                             <input
                             type="file"
@@ -176,27 +182,28 @@ export default function TeamSection () {
                         </label>
                         <p className="pl-1">or drag and drop</p>
                         </div>
-                        <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                        <p className="text-xs text-white/40">PNG, JPG up to 5MB</p>
                     </div>
                     </div>
                 </div>
-                <div className='flex justify-between items-center  w-[30vw]'>
+                <div className='flex justify-between items-center gap-4 w-full max-w-xs'>
                 <motion.button
                     whileHover={{ scale: 1.02 }}
-                    className='w-24 bg-blue-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 transition duration-300 cursor-pointer'
+                    className='btn-primary flex-1 cursor-pointer'
                     onClick={handleAddTeamMember}
                 >
                     Add
                 </motion.button>
                 <motion.button
                     whileHover={{ scale: 1.02 }}
-                    className='w-24 bg-gray-200 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-100 transition duration-300 cursor-pointer'
+                    className='btn-ghost flex-1 cursor-pointer'
                     onClick={() => setActive(false)}
                 >
                     Cancel
                 </motion.button>
                 </div>
-                
+
+           </motion.div>
            </div>
            }
 

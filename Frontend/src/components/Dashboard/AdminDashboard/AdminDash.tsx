@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PartiesList } from './PartiesList';
 import { ShowResults } from './ShowResults';
+import { API_URL } from '../../../utils/util';
 
 export interface Party {
     id: string;
@@ -45,39 +46,39 @@ export default function AdminDash () {
     useEffect(() => {
       const getTotalVoters = async () => {
         try {
-          const totalVoters = await axios.get('http://localhost:3000/api/v3/totalVoters');
+          const totalVoters = await axios.get(`${API_URL}/api/v3/totalVoters`);
           if(totalVoters.status === 200){
               setTotalVoters(totalVoters.data.totalVoters);
           }else{
             setTotalVoters(0.0);
           }
-        } catch (error) {
+        } catch {
           setTotalVoters(0.0);
           alert("Error fetching total voters");
         }
       }
       const getTotalVotes = async () => {
         try {
-          const totalVotes = await axios.get('http://localhost:3000/api/v3/totalVotes');
+          const totalVotes = await axios.get(`${API_URL}/api/v3/totalVotes`);
           if(totalVotes.status === 200){
             setTotalVotes(totalVotes.data.totalVotes);
           }else{
             setTotalVotes(0.0);
           }
-        } catch (error) {
+        } catch {
           setTotalVotes(0.0);
           alert("Error fetching total votes");
         }
       }
       const getBlockedVoters = async () => {
         try {
-            const blockedVoters = await axios.get('http://localhost:3000/api/v1/getBlockedVoters');
+            const blockedVoters = await axios.get(`${API_URL}/api/v1/getBlockedVoters`);
             if(blockedVoters.status === 200){
               setBlockedVoters(blockedVoters.data.blockedVoters.length);
             }else{
               setBlockedVoters(0.0);
             }
-        } catch (error) {
+        } catch {
            setBlockedVoters(0.0);
            alert("Error fetching blocked voters")
         }
@@ -114,13 +115,16 @@ export default function AdminDash () {
         }
     }
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-aurora text-white">
       <Sidebar setRender={setRender} />
-      
-      <main className="flex-1 p-8">
+
+      <main className="flex-1 p-8 overflow-x-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Election Dashboard</h1>
+          <div className="flex flex-col gap-4 mb-8 md:flex-row md:justify-between md:items-center">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-widest text-cyber-400">Admin</p>
+              <h1 className="mt-1 text-3xl font-bold font-display gradient-text">Election Dashboard</h1>
+            </div>
             <ElectionControls />
           </div>
 
@@ -145,46 +149,44 @@ export default function AdminDash () {
 
           {handleRendering(render)}
         </div>
-        <br />
-        <br />
-        <footer>
+        <footer className="mt-16 border-t border-white/10 pt-10">
         <div className="grid md:grid-cols-3 gap-8">
-         
+
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">About Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">How It Works</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Security</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">FAQ</a></li>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white/80 mb-4">Quick Links</h4>
+            <ul className="space-y-2.5">
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">About Us</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">How It Works</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Security</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">FAQ</a></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-lg font-semibold mb-4">Resources</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Documentation</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">API</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Support</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Contact</a></li>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white/80 mb-4">Resources</h4>
+            <ul className="space-y-2.5">
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Documentation</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">API</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Support</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Contact</a></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-lg font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Cookie Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-gray-700 transition-colors">Compliance</a></li>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white/80 mb-4">Legal</h4>
+            <ul className="space-y-2.5">
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Privacy Policy</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Terms of Service</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Cookie Policy</a></li>
+              <li><a href="#" className="text-sm text-white/55 transition-colors hover:text-cyber-300">Compliance</a></li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Digital Voting Platform. All rights reserved.</p>
+        <div className="border-t border-white/10 mt-8 pt-8 text-center text-sm text-white/45">
+          <p>&copy; {new Date().getFullYear()} VoteChain. All rights reserved.</p>
         </div>
-  
+
       </footer>
       </main>
-      
+
     </div>
   );
 }

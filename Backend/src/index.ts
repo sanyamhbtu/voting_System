@@ -18,13 +18,24 @@ import { addParty, blockVoter, distributeTokens, endElection, getPartyStatus, ge
 import { PythonShell } from "python-shell";
 import { initializeWebSocket, broadcast } from './webSocket.js';
 import { createServer } from 'http';
+import { gcpClientOptions, GCS_BUCKET } from './gcpAuth.js';
 const app = express();
 
-const PORT = 3000;
-export const storage = new Storage({keyFilename : 'src/skilled-circle-448817-d1-e3457c9445ad.json'});
-export const bucket = storage.bucket('votingbuck')
+const PORT = Number(process.env.PORT) || 3000;
+export const storage = new Storage(gcpClientOptions());
+export const bucket = storage.bucket(GCS_BUCKET)
 const upload = multer({ storage: multer.memoryStorage() });
-app.use(cors({credentials: true, origin: 'http://localhost:5173'}));
+app.use(cors({
+  credentials: true, 
+  origin: function (origin, callback) {
+    const allowedOrigins = ['http://localhost:5173', process.env.FRONTEND_URL];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  }
+}));
 app.use(express.json());
 const server = createServer(app);
 initializeWebSocket(server);
@@ -333,7 +344,6 @@ app.post('/api/v1/verifyVoter',middleware, async(req : Request, res: Response) =
         const givenImage = await getPublicGoogleUrl(selfie);
         const options : any = {
             mode : "text",
-            pythonPath: "D:\\Programs\\python.exe",
             scriptPath: "./dist/",
             args: [storedImage,givenImage],
         }
@@ -1322,7 +1332,7 @@ app.post('/api/v3/vote',middleware, async(req : Request, res : Response) => {
             hash : transaction,
             time : time.toISOString()
         }
-        const broadcastData = await broadcastMessages.broadcastMessages.create({
+        await broadcastMessages.broadcastMessages.create({
             name : voterData.name,
             party : voterData.party,
             hash : voterData.hash,
