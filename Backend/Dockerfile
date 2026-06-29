@@ -1,8 +1,8 @@
 FROM node:20-slim
 WORKDIR /app
 
-# Install python and pip
-RUN apt-get update && apt-get install -y python3 python3-pip python-is-python3
+# Install python and pip, along with C++ tools needed for face_recognition (dlib)
+RUN apt-get update && apt-get install -y python3 python3-pip python-is-python3 build-essential cmake
 
 # Copy package files
 COPY package*.json ./

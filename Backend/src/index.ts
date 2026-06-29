@@ -28,7 +28,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(cors({
   credentials: true, 
   origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:5173', process.env.FRONTEND_URL];
+    const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : undefined;
+    const allowedOrigins = ['http://localhost:5173', frontendUrl];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -343,18 +344,27 @@ app.post('/api/v1/verifyVoter',middleware, async(req : Request, res: Response) =
         const storedImage = await getPublicGoogleUrl(file);
         const givenImage = await getPublicGoogleUrl(selfie);
         const options : any = {
-            mode : "text",
+            mode : "json",
             scriptPath: "./dist/",
             args: [storedImage,givenImage],
         }
 
         const pythonScript = await PythonShell.run("voterVerification.py",options);
-        if(!pythonScript){
+        if(!pythonScript || pythonScript.length === 0){
             res.status(500).json({
                 message : "Error in pythonScript"
             })
             return;
         }
+        
+        const result = pythonScript[0];
+        if (!result || !result.match) {
+            res.status(400).json({
+                message : "Face verification failed"
+            });
+            return;
+        }
+
         res.status(200).json({
             message : "Voter verified successfully"
         })
